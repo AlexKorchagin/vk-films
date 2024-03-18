@@ -1,0 +1,577 @@
+openapi: 3.0.0
+info:
+  title: Swagger Фильмотека - OpenAPI 3.0
+  version: 1.0.
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+  
+tags:
+- name: auth
+  description: Authentication operations
+- name: actors
+- name: films
+  
+  
+paths:
+# auth
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login request
+      description: Returns access and refresh tokens
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/loginResponse'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: Logout request
+      description: Logs out the user
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: Invalid access token value
+
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: Refresh request
+      description: Refreshes the access token
+      operationId: refresh
+      parameters:
+        - name: refreshToken
+          in: query
+          description: Your refresh token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/refreshResponse'
+        '400':
+          description: Invalid refresh token value
+        '422':
+          description: Validation exception
+
+
+          
+  
+
+
+# admin - actors
+  
+  /actors:
+    get:
+      tags:
+        - actors
+      summary: Get all actors
+      description: Returns all actors
+      operationId: admin-getAllactors
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+    post:
+      tags:
+        - actors
+      summary: Add a new actor
+      description: Add a new actor
+      operationId: addActor
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Add a new actor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/actor'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/actor'
+        required: true
+      parameters:
+        - name: Name
+          in: query
+          description: Name of actor
+          required: true
+          schema:
+            type: string
+        - name: LastName
+          in: query
+          description: Lastname of actor
+          required: true
+          schema:
+            type: string
+        - name: Gender
+          in: query
+          description: Gender of actor
+          required: false
+          schema:
+            type: string
+        - name: DateOfBirh
+          in: query
+          description: Gender of actor
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: actor created successfully
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+  /actors/{id}:
+    get:
+      tags:
+        - actors
+      summary: Get actor by ID
+      description: Returns an actor by their ID
+      operationId: getActorByID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the artist to get
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/actor'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+          
+    put:
+      tags:
+        - actors
+      summary: Update actor
+      description: Update actor by ID
+      operationId: updateActor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the actor to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: Name
+          in: query
+          description: Name of actor
+          required: false
+          schema:
+            type: string
+        - name: LastName
+          in: query
+          description: Lastname of actor
+          required: false
+          schema:
+            type: string
+            format: date
+            example: 05.08.2005
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/actor'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/actor'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: actor not found
+        '422':
+          description: Validation exception
+  
+    delete:
+      tags:
+        - actors
+      summary: Delete actor
+      description: Deletes an actor by their ID
+      operationId: deleteActor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the actor to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: actor deleted successfully
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+  
+# admin - films
+  
+  /films:
+    get:
+      tags:
+        - films
+      summary: Get all films
+      description: Returns all films
+      operationId: admin-getAllFilms
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/film'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+    post:
+      tags:
+        - films
+      summary: Add a new film
+      description: Add a new film
+      operationId: addFilm
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Add a new film
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/film'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/film'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/film'
+        required: true
+      parameters:
+        - name: Name
+          in: query
+          description: Name of film
+          required: true
+          schema:
+            type: string
+            maxLength: 150
+        - name: Desqription
+          in: query
+          description: Desqription of film
+          required: true
+          schema:
+            type: string
+            maxLength: 1000
+        - name: PublishDay
+          in: query
+          description: Publish date
+          required: false
+          schema:
+            type: string
+            format: date
+            
+        - name: Rating
+          in: query
+          schema:
+            type: number
+            minimum: 0
+            maximum: 10
+            example: 0-10
+        - name: Actors
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/film'
+            
+      
+      responses:
+        '200':
+          description: film created successfully
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+    
+  /films/{id}:     
+    get:
+      tags:
+        - films
+      summary: Get film by ID
+      description: Returns a film by their ID
+      operationId: getFilmByID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the film to get
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/film'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+    
+    
+    put:
+      tags:
+        - films
+      summary: Update film
+      description: Update film by ID
+      operationId: updateFilm
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the actor to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: Name
+          in: query
+          description: Name of actor
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/actor'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/actor'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: actor not found
+        '422':
+          description: Validation exception
+  
+  
+    delete:
+      tags:
+        - films
+      summary: Delete film
+      description: Deletes a film by their ID
+      operationId: deleteFilm
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the film to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: film deleted successfully
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+
+
+components:
+  schemas:
+    actor:
+      type: object
+      properties:
+        actorID: 
+          type: integer
+          format: int64
+        Name:
+          type: string
+          example: Райян
+        LastName:
+          type: string
+          example: Гослинг
+        Gender:
+          type: string
+          example: Мужчина
+        DateOfBirth:
+          type: string
+          format: date
+          example: 05.08.2005
+        Films:
+          type: array
+          items:
+            type: string
+    
+    film:
+      type: object
+      properties:
+        FilmID: 
+          type: integer
+          format: int64
+        Name:
+          type: string
+          maxLength: 150
+          example: Лалалэнд
+        Desqription:
+          type: string
+          maxLength: 1000
+          example: Волшебный мир музыки
+        PublishDay:
+          type: string
+          format: date
+          example: 05.08.2005
+        Rating:
+          type: number
+          minimum: 0
+          maximum: 10
+        Actors:
+          type: array
+          items:
+            type: string
+            
+  responses:
+    loginResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+                - accessToken
+                - refreshToken
+            properties:
+              access_token:
+                type: string
+              refresh_token:
+                type: string
+    refreshResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+                - accessToken
+            properties:
+              access_token:
+                type: string
+    
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    

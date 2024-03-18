@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15.4-alpine
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=qy4g15l3d0
+      - POSTGRES_DB=ywa
+    ports:
+      - "5432:5432"
+    restart: always
